@@ -156,7 +156,7 @@ func New(args []string) (*Core, bool) {
 		done:           make(chan struct{}),
 	}
 
-	tempLogger, _ := logger.New(logger.Warn, []logger.Destination{logger.DestinationStdout}, "", "")
+	tempLogger, _ := logger.New(logger.Warn, []logger.Destination{logger.DestinationStdout}, "", "", false)
 
 	confPaths := append([]string(nil), defaultConfPaths...)
 	if runtime.GOOS != "windows" {
@@ -267,6 +267,7 @@ func (p *Core) createResources(initial bool) error {
 			p.conf.LogDestinations,
 			p.conf.LogFile,
 			p.conf.SysLogPrefix,
+			p.conf.StructuredLog,
 		)
 		if err != nil {
 			return err
@@ -690,7 +691,8 @@ func (p *Core) closeResources(newConf *conf.Conf, calledByAPI bool) {
 		newConf.LogLevel != p.conf.LogLevel ||
 		!reflect.DeepEqual(newConf.LogDestinations, p.conf.LogDestinations) ||
 		newConf.LogFile != p.conf.LogFile ||
-		newConf.SysLogPrefix != p.conf.SysLogPrefix
+		newConf.SysLogPrefix != p.conf.SysLogPrefix ||
+		newConf.StructuredLog != p.conf.StructuredLog
 
 	closeAuthManager := newConf == nil ||
 		newConf.AuthMethod != p.conf.AuthMethod ||
